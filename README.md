@@ -1,1 +1,1018 @@
 # leup
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>시스템: 나만의 레벨업 최종형 v3.9</title>
+    <!-- PWA 및 모바일 앱 최적화 메타 태그 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="레벨업 시스템">
+    <meta name="theme-color" content="#020617">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAyMDYxNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjMzZW0iIGZpbGw9IiMwMGQ5ZmYiPlNZUzwvdGV4dD48L3N2Zz4=">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700;900&display=swap');
+        
+        body {
+            background-color: #020617;
+            color: #00d9ff;
+            font-family: 'Noto Sans KR', 'Orbitron', sans-serif;
+            background-image: 
+                radial-gradient(at 50% 0%, rgba(0, 217, 255, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(244, 63, 94, 0.08) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, rgba(147, 51, 234, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .system-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .neon-border-blue {
+            border: 1px solid rgba(0, 217, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.1), inset 0 0 15px rgba(0, 217, 255, 0.05);
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(12px);
+        }
+
+        .neon-border-pink {
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.1), inset 0 0 15px rgba(244, 63, 94, 0.05);
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        .neon-border-gold {
+            border: 2px solid rgba(234, 179, 8, 0.9);
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.4), inset 0 0 15px rgba(234, 179, 8, 0.15);
+            background: rgba(12, 10, 2, 0.92);
+            backdrop-filter: blur(12px);
+        }
+
+        .neon-text-blue { color: #00d9ff; text-shadow: 0 0 8px rgba(0, 217, 255, 0.6); }
+        .neon-text-pink { color: #f43f5e; text-shadow: 0 0 8px rgba(244, 63, 94, 0.6); }
+        .neon-text-gold { color: #eab308; text-shadow: 0 0 12px rgba(234, 179, 8, 0.9); }
+
+        .glow-weapon { filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.8)); }
+
+        .cell-input {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            text-align: center;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            border: none;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .cell-input:focus {
+            background: rgba(0, 217, 255, 0.15);
+            box-shadow: inset 0 0 5px rgba(0, 217, 255, 0.5);
+        }
+
+        .target-cell-input {
+            width: 100%;
+            height: 100%;
+            background: rgba(234, 179, 8, 0.05);
+            text-align: center;
+            color: #facc15;
+            font-size: 12px;
+            font-weight: 900;
+            text-shadow: 0 0 4px rgba(234, 179, 8, 0.3);
+            border: none;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .target-cell-input:focus {
+            background: rgba(234, 179, 8, 0.25);
+            box-shadow: inset 0 0 8px rgba(234, 179, 8, 0.7);
+            color: #ffffff;
+        }
+
+        /* 수정 가능한 과목명 인풋 스타일 */
+        .subject-header-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            text-align: center;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+        .subject-header-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+        ::-webkit-scrollbar-thumb { background: #00d9ff; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen pb-24 px-3 md:px-6 py-6 flex flex-col items-center">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- 앱 설치 가이드 오버레이 -->
+    <div id="install-guide-overlay" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="border border-cyan-500 bg-cyan-950/20 p-6 max-w-md w-11/12 rounded-xl shadow-[0_0_20px_rgba(0,217,255,0.2)]">
+            <h4 class="text-cyan-400 text-xl font-black mb-4 system-font flex items-center gap-2">
+                <i data-lucide="download" class="w-6 h-6"></i> 앱으로 설치하기
+            </h4>
+            <div class="text-sm text-gray-300 space-y-4 font-medium">
+                <p>이 시스템을 기기의 홈 화면에 추가하면 <strong>독립된 앱처럼 전체화면으로 실행</strong>할 수 있습니다.</p>
+                <div class="bg-black/50 p-4 rounded border border-cyan-900">
+                    <h5 class="text-white font-bold mb-1 flex items-center gap-1"><i data-lucide="apple" class="w-4 h-4"></i> 아이패드 / 아이폰 (Safari)</h5>
+                    <p class="text-xs text-gray-400">하단 또는 상단의 <strong>공유 버튼(⍐)</strong> ➔ <strong>'홈 화면에 추가'</strong> 선택</p>
+                </div>
+                <div class="bg-black/50 p-4 rounded border border-cyan-900">
+                    <h5 class="text-white font-bold mb-1 flex items-center gap-1"><i data-lucide="smartphone" class="w-4 h-4"></i> 안드로이드 기기 (Chrome)</h5>
+                    <p class="text-xs text-gray-400">브라우저 우측 상단 <strong>메뉴(⋮)</strong> ➔ <strong>'홈 화면에 추가'</strong> 또는 <strong>'앱 설치'</strong> 선택</p>
+                </div>
+                <p class="text-[10px] text-cyan-500 mt-2">* 인터넷이 끊겨도 오프라인에서 안전하게 동작하며 데이터가 보존됩니다.</p>
+            </div>
+            <button onclick="closeInstallGuide()" class="mt-6 w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold tracking-wider transition rounded">확인 및 닫기</button>
+        </div>
+    </div>
+
+    <!-- LEVEL UP 오버레이 -->
+    <div id="levelup-overlay" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden">
+        <div class="text-center p-6 animate-pulse">
+            <div class="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-rose-500 tracking-wider system-font mb-4">
+                LEVEL UP
+            </div>
+            <p class="text-white text-xl md:text-2xl font-bold">플레이어의 신체 및 정신 수치가 상향 조정되었습니다.</p>
+            <button onclick="closeLevelUp()" class="mt-8 px-8 py-3 border border-cyan-400 bg-cyan-950/50 hover:bg-cyan-400 hover:text-black font-bold tracking-wider transition duration-300">확인 완료</button>
+        </div>
+    </div>
+
+    <!-- 경고 알람 오버레이 -->
+    <div id="alarm-overlay" class="fixed inset-0 bg-rose-950/95 backdrop-blur-md flex items-center justify-center z-50 hidden">
+        <div class="border-2 border-rose-500 bg-black p-8 max-w-sm w-11/12 text-center shadow-[0_0_40px_rgba(244,63,94,0.4)]">
+            <div class="w-16 h-16 bg-rose-500/10 border border-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
+    <header class="text-center mb-8 max-w-7xl w-full relative">
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-widest neon-text-blue system-font flex items-center justify-center gap-3">
+            <i data-lucide="cpu" class="w-9 h-9 animate-spin" style="animation-duration: 8s;"></i> SYSTEM DASHBOARD
+        </h1>
+        <p class="text-xs text-gray-500 mt-1.5 uppercase tracking-widest">CHARACTER CONTROL & ACADEMIC MONITOR v3.9</p>
+        
+        <!-- 데스크탑 우측 상단 설치 버튼 -->
+        <button onclick="showInstallGuide()" class="absolute top-0 right-0 hidden md:flex items-center gap-1.5 text-xs bg-cyan-950/50 border border-cyan-800 text-cyan-400 px-3 py-1.5 rounded hover:bg-cyan-800 transition">
+            <i data-lucide="smartphone" class="w-4 h-4"></i> 앱으로 설치
+        </button>
+        <!-- 모바일 하단 설치 버튼 -->
+        <button onclick="showInstallGuide()" class="mt-4 mx-auto md:hidden flex items-center justify-center gap-1.5 text-xs bg-cyan-950/50 border border-cyan-800 text-cyan-400 px-4 py-2 rounded hover:bg-cyan-800 transition w-full max-w-[200px]">
+            <i data-lucide="smartphone" class="w-4 h-4"></i> 홈 화면에 앱 설치
+        </button>
+    </header>
+
+    <div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT COLUMN (프로필, 목표표, 성적표, 그래프) -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- 플레이어 명함 카드 -->
+            <div class="window neon-border-blue p-5 rounded-xl relative">
+                <div class="absolute top-4 right-4 text-[10px] bg-cyan-950 border border-cyan-800 text-cyan-400 px-2 py-0.5 rounded uppercase font-bold tracking-widest">ID Card</div>
+                <h3 class="text-xs font-bold tracking-widest text-cyan-400 system-font flex items-center gap-1.5 mb-4 uppercase">
+                    <i data-lucide="id-card" class="w-4 h-4"></i> PLAYER ID CARD
+                </h3>
+                
+                <div class="grid grid-cols-2 gap-4 bg-cyan-950/20 border border-cyan-900/40 p-4 rounded-lg">
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[10px] text-gray-500 block uppercase font-bold">NAME</label>
+                            <input type="text" id="p-name" class="bg-transparent border-b border-cyan-950 hover:border-cyan-500 focus:border-cyan-400 text-white text-sm font-bold w-full py-0.5 transition" placeholder="플레이어 이름 입력" oninput="saveProfile()" onblur="saveProfile()">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-500 block uppercase font-bold">AGE</label>
+                            <input type="number" id="p-age" class="bg-transparent border-b border-cyan-950 hover:border-cyan-500 focus:border-cyan-400 text-white text-sm font-bold w-full py-0.5 transition" placeholder="나이" oninput="saveProfile()" onblur="saveProfile()">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-500 block uppercase font-bold">SCHOOL</label>
+                            <input type="text" id="p-school" class="bg-transparent border-b border-cyan-950 hover:border-cyan-500 focus:border-cyan-400 text-white text-sm font-bold w-full py-0.5 transition" placeholder="학교명" oninput="saveProfile()" onblur="saveProfile()">
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[10px] text-gray-500 block uppercase font-bold">GRADE</label>
+                            <input type="text" id="p-grade" class="bg-transparent border-b border-cyan-950 hover:border-cyan-500 focus:border-cyan-400 text-white text-sm font-bold w-full py-0.5 transition" placeholder="학년" oninput="saveProfile()" onblur="saveProfile()">
+                        </div>
+                        <div class="col-span-1">
+                            <label class="text-[10px] text-gray-500 block uppercase font-bold">CHARACTERISTICS</label>
+                            <textarea id="p-traits" rows="3" class="bg-transparent border border-cyan-950 hover:border-cyan-900 focus:border-cyan-500 focus:bg-black/50 text-white text-xs w-full p-1.5 transition rounded resize-none" placeholder="플레이어의 특징 및 성격" oninput="saveProfile()" onblur="saveProfile()"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 과목별 성적 목표 설정 표 (동적 생성) -->
+            <div class="window neon-border-gold p-5 rounded-xl">
+                <h3 class="text-xs font-black tracking-widest text-yellow-400 system-font flex items-center gap-1.5 mb-3 uppercase neon-text-gold">
+                    <i data-lucide="target" class="w-4 h-4 animate-pulse"></i> MISSION TARGET MATRIX
+                </h3>
+                <p class="text-[10px] text-yellow-500/90 mb-3 font-bold">* 상단 과목명을 클릭해 수정할 수 있습니다. 변경사항은 즉시 저장됩니다.</p>
+                <div class="overflow-x-auto border border-yellow-500/60 rounded-lg">
+                    <table class="w-full text-center border-collapse">
+                        <thead id="target-matrix-thead">
+                            <!-- JS로 동적 로드 -->
+                        </thead>
+                        <tbody id="target-matrix-tbody" class="divide-y divide-yellow-600/40">
+                            <!-- JS로 동적 로드 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 학기별 성적 매트릭스 표 (동적 생성) -->
+            <div class="window neon-border-blue p-5 rounded-xl">
+                <h3 class="text-xs font-bold tracking-widest text-cyan-400 system-font flex items-center gap-1.5 mb-4 uppercase">
+                    <i data-lucide="table-properties" class="w-4 h-4"></i> ACADEMIC MATRIX
+                </h3>
+                <p class="text-[10px] text-cyan-500/90 mb-3 font-bold">* 각 행의 과목명을 클릭하여 원하는 과목명으로 수정하십시오.</p>
+                <div class="overflow-x-auto border border-cyan-950/80 rounded-lg">
+                    <table class="w-full text-center border-collapse">
+                        <thead>
+                            <tr class="bg-cyan-950/50 border-b border-cyan-900/60 text-[10px] text-cyan-400 font-bold">
+                                <th class="py-2.5 px-1 border-r border-cyan-900/40 min-w-[70px]">과목 분류</th>
+                                <th class="py-2.5 px-1 border-r border-cyan-900/40">1-1</th>
+                                <th class="py-2.5 px-1 border-r border-cyan-900/40">1-2</th>
+                                <th class="py-2.5 px-1 border-r border-cyan-900/40">2-1</th>
+                                <th class="py-2.5 px-1 border-r border-cyan-900/40">2-2</th>
+                                <th class="py-2.5 px-1 border-r border-cyan-900/40">3-1</th>
+                                <th class="py-2.5 px-1">3-2</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrix-tbody">
+                            <!-- JS를 통해 동적 탑재 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 상태창 & 경험치바 -->
+            <div class="window neon-border-blue p-5 rounded-xl">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded border border-cyan-500 bg-cyan-950/20 flex flex-col items-center justify-center relative flex-shrink-0">
+                        <span class="text-[9px] text-cyan-400/80 font-bold uppercase">LV</span>
+                        <span id="level" class="text-xl font-black text-white system-font leading-none">1</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between text-[11px] font-semibold mb-1">
+                            <span class="text-gray-400">EXP GAUGE</span>
+                            <span class="text-cyan-400"><span id="exp">0</span> / 100 XP</span>
+                        </div>
+                        <div class="w-full h-3 bg-black border border-cyan-950 rounded-full overflow-hidden p-[1.5px]">
+                            <div id="exp-bar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-3 bg-cyan-950/20 border border-cyan-950/60 p-2.5 rounded text-xs">
+                    <span class="font-medium text-gray-400 flex items-center gap-1.5">
+                        <i data-lucide="coins" class="w-4 h-4 text-yellow-500 animate-pulse"></i> SYSTEM CREDIT
+                    </span>
+                    <span class="text-sm font-black text-yellow-400 system-font"><span id="coin">0</span> <span class="text-[10px] text-yellow-500">G</span></span>
+                </div>
+            </div>
+
+            <!-- 주간 분석 그래프 -->
+            <div class="window neon-border-blue p-5 rounded-xl">
+                <h3 class="text-xs font-bold tracking-widest text-cyan-400 system-font flex items-center gap-1.5 mb-3 uppercase">
+                    <i data-lucide="activity" class="w-4 h-4"></i> PERFORMANCE CURVE
+                </h3>
+                <div class="w-full bg-black/50 p-2 rounded border border-cyan-950/60 h-40">
+                    <canvas id="statsChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN (퀘스트, 상점, 인벤토리) -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+            
+            <!-- 퀘스트 수락 및 보드 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 퀘스트 생성기 -->
+                <div class="window neon-border-blue p-5 rounded-xl">
+                    <h3 class="text-xs font-bold tracking-widest text-cyan-400 system-font flex items-center gap-1.5 mb-4 border-b border-cyan-950 pb-2 uppercase">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> RECEIVE QUEST
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[10px] font-semibold text-cyan-500 uppercase tracking-wider block mb-1">퀘스트명</label>
+                            <input type="text" id="q-name" placeholder="작전 임무를 기술하세요" class="w-full bg-black border border-cyan-950 text-white text-xs p-2.5 focus:border-cyan-400 rounded">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] font-semibold text-cyan-500 uppercase tracking-wider block mb-1">마감 한계시</label>
+                                <input type="datetime-local" id="q-datetime" class="w-full bg-black border border-cyan-950 text-white text-[10px] p-2 focus:border-cyan-400 rounded">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-semibold text-cyan-500 uppercase tracking-wider block mb-1">임무 등급</label>
+                                <select id="q-type" class="w-full bg-black border border-cyan-950 text-white text-xs p-2 focus:border-cyan-400 rounded">
+                                    <option value="daily">일반 (30 XP / 10 G)</option>
+                                    <option value="special">네임드 (100 XP / 50 G)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="addQuest()" class="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-black font-black text-xs tracking-widest transition rounded uppercase">
+                            임무 수락
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 퀘스트 게시판 -->
+                <div class="window neon-border-blue p-5 rounded-xl flex flex-col">
+                    <div class="flex items-center justify-between mb-2 border-b border-cyan-950 pb-2">
+                        <h3 class="text-xs font-bold tracking-widest text-cyan-400 system-font flex items-center gap-1.5 uppercase">
+                            <i data-lucide="clipboard-list" class="w-4 h-4"></i> QUEST BOARD
+                        </h3>
+                        <button onclick="clearCompletedQuests()" class="text-[10px] text-gray-500 hover:text-rose-400 transition flex items-center gap-1">
+                            <i data-lucide="eraser" class="w-3.5 h-3.5"></i> 완료 청소
+                        </button>
+                    </div>
+                    <div id="quest-container" class="space-y-2 max-h-48 overflow-y-auto flex-1 pr-1">
+                        <!-- 퀘스트 아이템 탑재 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 무기 슬롯 상점 -->
+            <div class="window neon-border-pink p-5 rounded-xl">
+                <div class="flex items-center justify-between mb-4 border-b border-rose-950/60 pb-2 text-rose-500">
+                    <h3 class="text-xs font-bold tracking-widest system-font flex items-center gap-1.5 uppercase neon-text-pink">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> WEAPONS & ITEMS SHOP
+                    </h3>
+                    <div class="flex items-center gap-3">
+                        <button onclick="resetShopItems()" class="text-[10px] text-gray-500 hover:text-rose-400 transition">기본 상품 초기화</button>
+                    </div>
+                </div>
+
+                <div class="bg-rose-950/10 border border-rose-950 p-3.5 rounded-lg mb-4 grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div>
+                        <label class="text-[10px] font-bold text-rose-500 block mb-1">상점 신규 아이템</label>
+                        <input type="text" id="s-name" placeholder="예: 광선검 / 특제 에릭서" class="w-full bg-black border border-rose-950 text-white text-xs p-2 rounded">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-rose-500 block mb-1">지불 요구량 (G)</label>
+                        <input type="number" id="s-price" placeholder="요구 금액" class="w-full bg-black border border-rose-950 text-white text-xs p-2 rounded">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="addShopItem()" class="w-full py-2 bg-rose-900/40 hover:bg-rose-600 text-white font-bold text-xs rounded border border-rose-700 transition">
+                            상점 전리품 등록
+                        </button>
+                    </div>
+                </div>
+
+                <div id="shop-container" class="grid grid-cols-3 gap-2.5">
+                    <!-- 동적 카드 삽입 -->
+                </div>
+            </div>
+
+            <!-- 인벤토리 및 주간 영수증 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 소지품 인벤토리 -->
+                <div class="window neon-border-pink p-5 rounded-xl flex flex-col">
+                    <h3 class="text-xs font-bold tracking-widest text-rose-500 system-font flex items-center gap-1.5 mb-3 uppercase neon-text-pink border-b border-rose-950/60 pb-2">
+                        <i data-lucide="backpack" class="w-4 h-4"></i> PLAYER INVENTORY
+                    </h3>
+                    <p class="text-[10px] text-gray-500 mb-2">* 인벤토리 아이템을 클릭하면 즉시 소모(사용 완료)됩니다.</p>
+                    <div id="inventory-container" class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto flex-1 pr-1">
+                    </div>
+                </div>
+
+                <!-- 주간 영수증 -->
+                <div class="window neon-border-pink p-5 rounded-xl flex flex-col">
+                    <div class="flex items-center justify-between mb-3 border-b border-rose-950/60 pb-2 text-rose-500">
+                        <h3 class="text-xs font-bold tracking-widest system-font flex items-center gap-1.5 uppercase neon-text-pink">
+                            <i data-lucide="receipt" class="w-4 h-4"></i> WEEKLY LOGS
+                        </h3>
+                        <button onclick="clearPurchaseLogs()" class="text-[10px] text-gray-600 hover:text-rose-400 transition">기록 클리어</button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto max-h-48">
+                        <table class="w-full text-center text-xs">
+                            <thead>
+                                <tr class="text-[10px] text-rose-400 border-b border-rose-950 font-bold bg-rose-950/10">
+                                    <th class="py-1.5 text-left pl-2">전리품 명칭</th>
+                                    <th class="py-1.5 pr-2 text-right">구매 누적 수량</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchase-log-tbody" class="divide-y divide-rose-950/40 text-gray-300">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- 스크립트 소스 -->
+    <script>
+        const playSound = (url) => {
+            const audio = new Audio(url);
+            audio.volume = 0.35;
+            audio.play().catch(() => {});
+        };
+
+        const SOUNDS = {
+            complete: 'https://actions.google.com/sounds/v1/foley/drawbridge_clink.ogg',
+            levelUp: 'https://actions.google.com/sounds/v1/foley/uprising.ogg',
+            alarm: 'https://actions.google.com/sounds/v1/alarms/alarm_clock_ringing_beeps.ogg',
+            buy: 'https://actions.google.com/sounds/v1/foley/coins_shuffling.ogg'
+        };
+
+        // 데이터 스토리지 초기화
+        let lv = parseInt(localStorage.getItem('lv')) || 1;
+        let exp = parseInt(localStorage.getItem('exp')) || 0;
+        let coin = parseInt(localStorage.getItem('coin')) || 0;
+        
+        let quests = JSON.parse(localStorage.getItem('quests')) || [];
+        if(!Array.isArray(quests)) quests = [];
+        
+        let profile = JSON.parse(localStorage.getItem('profile')) || { name: "", age: "", grade: "", school: "", traits: "" };
+        
+        let shopItems = JSON.parse(localStorage.getItem('shopItems')) || [
+            { id: 1, name: "레이저 포스 세이버", price: 50, iconIdx: 0 },
+            { id: 2, name: "아케인 매직 스태프", price: 100, iconIdx: 1 },
+            { id: 3, name: "홀로그램 힐링 엘릭서", price: 30, iconIdx: 4 },
+            { id: 4, name: "택티컬 나노 에너지 실드", price: 150, iconIdx: 3 },
+            { id: 5, name: "스톰 바운드 레이저 보우", price: 120, iconIdx: 2 },
+            { id: 6, name: "퀀텀 크로노 링", price: 80, iconIdx: 5 }
+        ];
+
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        if(!Array.isArray(inventory)) inventory = [];
+
+        let purchaseLogs = JSON.parse(localStorage.getItem('purchaseLogs')) || {};
+        let stats = JSON.parse(localStorage.getItem('stats')) || [0, 0, 0, 0, 0, 0, 0];
+
+        // 과목명 커스터마이징 데이터 베이스 (사용자 수정 저장용)
+        let customTargetSubjects = JSON.parse(localStorage.getItem('customTargetSubjects')) || ["국어", "영어", "수학", "물리", "화학", "생명", "제2외국어"];
+        let customSubjects = JSON.parse(localStorage.getItem('customSubjects')) || ["국어", "영어", "수학", "과학", "사회", "역사", "물리", "화학", "생명", "제2외국어"];
+
+        const subTypes = ["내신", "모의"];
+        const semesters = ["1-1", "1-2", "2-1", "2-2", "3-1", "3-2"];
+
+        let targetScores = JSON.parse(localStorage.getItem('targetScores')) || {};
+        let gradesMatrix = JSON.parse(localStorage.getItem('gradesMatrix')) || {};
+        let activeAlarmAudio = null;
+
+        // 마이그레이션 함수: 과거 과목명(텍스트) 기반 키를 새 인덱스 기반 키로 변환
+        function migrateDataIfNeeded() {
+            let migrated = false;
+            
+            // 목표 점수 테이블 마이그레이션 확인
+            if (Object.keys(targetScores).some(k => isNaN(parseInt(k)))) {
+                let newTargetScores = {};
+                const oldKeys = ["국어", "영어", "수학", "물리", "화학", "생명", "제2외국어"];
+                oldKeys.forEach((key, idx) => {
+                    if (targetScores[key]) newTargetScores[idx] = targetScores[key];
+                });
+                targetScores = newTargetScores;
+                migrated = true;
+            }
+
+            // 매트릭스 테이블 마이그레이션 확인
+            if (Object.keys(gradesMatrix).some(k => isNaN(parseInt(k.split('-')[0])))) {
+                let newGradesMatrix = {};
+                const oldSubKeys = ["국어", "영어", "수학", "과학", "사회", "역사", "물리", "화학", "생명", "제2외국어"];
+                Object.keys(gradesMatrix).forEach(key => {
+                    let parts = key.split('-');
+                    if(parts.length >= 4) {
+                        let sub = parts[0];
+                        let type = parts[1];
+                        let sem = parts[2] + "-" + parts[3];
+                        let idx = oldSubKeys.indexOf(sub);
+                        if(idx !== -1) {
+                            newGradesMatrix[`${idx}-${type}-${sem}`] = gradesMatrix[key];
+                        }
+                    }
+                });
+                gradesMatrix = newGradesMatrix;
+                migrated = true;
+            }
+
+            if (migrated) {
+                save();
+            }
+        }
+
+        // 전체 데이터 저장 모듈
+        function save() {
+            localStorage.setItem('lv', lv);
+            localStorage.setItem('exp', exp);
+            localStorage.setItem('coin', coin);
+            localStorage.setItem('quests', JSON.stringify(quests));
+            localStorage.setItem('shopItems', JSON.stringify(shopItems));
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('purchaseLogs', JSON.stringify(purchaseLogs));
+            localStorage.setItem('stats', JSON.stringify(stats));
+            localStorage.setItem('gradesMatrix', JSON.stringify(gradesMatrix));
+            localStorage.setItem('targetScores', JSON.stringify(targetScores));
+            localStorage.setItem('customTargetSubjects', JSON.stringify(customTargetSubjects));
+            localStorage.setItem('customSubjects', JSON.stringify(customSubjects));
+        }
+
+        function saveProfile() {
+            profile.name = document.getElementById('p-name').value;
+            profile.age = document.getElementById('p-age').value;
+            profile.grade = document.getElementById('p-grade').value;
+            profile.school = document.getElementById('p-school').value;
+            profile.traits = document.getElementById('p-traits').value;
+            localStorage.setItem('profile', JSON.stringify(profile));
+        }
+
+        function loadProfileAndTargetData() {
+            document.getElementById('p-name').value = profile.name || "";
+            document.getElementById('p-age').value = profile.age || "";
+            document.getElementById('p-grade').value = profile.grade || "";
+            document.getElementById('p-school').value = profile.school || "";
+            document.getElementById('p-traits').value = profile.traits || "";
+        }
+
+        // 과목명 수정 즉시 저장 시스템
+        function updateTargetSubject(idx, val) {
+            customTargetSubjects[idx] = val;
+            save();
+        }
+
+        function updateSubject(idx, val) {
+            customSubjects[idx] = val;
+            save();
+            // 두 번째 행(모의)의 비활성화된 인풋 필드 동기화
+            const dummy = document.getElementById(`sub-dummy-${idx}`);
+            if (dummy) dummy.value = val;
+        }
+
+        // 셀 입력값 저장 시스템
+        function saveTargetCell(idx, type, val) {
+            if (!targetScores[idx]) targetScores[idx] = {};
+            targetScores[idx][type] = val;
+            save();
+        }
+
+        const WEAPON_SVGS = [
+            `<svg class="w-12 h-12 glow-weapon mx-auto" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M48 16L18 46M18 46L14 50M18 46L22 42M14 50L12 52L10 50L12 48L14 50Z" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"/>
+                <path d="M48 16L54 10" stroke="#00d9ff" stroke-width="4" stroke-linecap="round" class="animate-pulse"/>
+                <circle cx="16" cy="48" r="3" fill="#f43f5e"/>
+            </svg>`,
+            `<svg class="w-12 h-12 glow-weapon mx-auto" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 52L44 20" stroke="#a855f7" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="48" cy="16" r="6" stroke="#00d9ff" stroke-width="3"/>
+                <circle cx="48" cy="16" r="2" fill="#00d9ff"/>
+                <path d="M40 16H34M48 24V30" stroke="#f43f5e" stroke-width="2"/>
+            </svg>`,
+            `<svg class="w-12 h-12 glow-weapon mx-auto" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 12C28 14 44 24 44 32C44 40 28 50 16 52" stroke="#10b981" stroke-width="3" stroke-linecap="round"/>
+                <path d="M16 12V52" stroke="#ffffff" stroke-width="1" stroke-dasharray="2 2"/>
+                <path d="M8 32H38M38 32L32 26M38 32L32 38" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>`,
+            `<svg class="w-12 h-12 glow-weapon mx-auto" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 10C42 12 48 20 48 32C48 44 42 50 32 54C22 50 16 44 16 32C16 20 22 12 32 10Z" fill="rgba(6, 182, 212, 0.1)" stroke="#00d9ff" stroke-width="3"/>
+                <path d="M32 18V46M22 32H42" stroke="#00d9ff" stroke-width="2" stroke-linecap="round"/>
+            </svg>`,
+            `<svg class="w-12 h-12 glow-weapon mx-auto" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 24H40V48C40 52.4 36.4 56 32 56C27.6 56 24 52.4 24 48V24Z" fill="rgba(244, 63, 94, 0.15)" stroke="#f43f5e" stroke-width="3"/>
+                <path d="M28 24V14H36V24" stroke="#ffffff" stroke-width="2"/>
+                <path d="M26 38H38M32 32V44" stroke="#f43f5e" stroke-width="2.5"/>
+            </svg>`,
+            `<svg class="w-12 h-12 glow-weapon mx-auto" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="36" r="14" stroke="#3b82f6" stroke-width="3"/>
+                <rect x="24" y="14" width="16" height="10" rx="2" fill="rgba(234, 179, 8, 0.2)" stroke="#eab308" stroke-width="2"/>
+                <circle cx="32" cy="19" r="2" fill="#eab308" class="animate-ping"/>
+            </svg>`
+        ];
+
+        // 동적 목표 매트릭스 렌더링 엔진
+        function renderTargetMatrix() {
+            const thead = document.getElementById('target-matrix-thead');
+            const tbody = document.getElementById('target-matrix-tbody');
+            
+            let trHead = `<tr class="bg-yellow-950/70 border-b border-yellow-600/50 text-[10px] text-yellow-300 font-black">
+                <th class="py-2 px-2 border-r border-yellow-600/40 min-w-[130px] text-left pl-3">목표 분류 체계</th>`;
+            
+            customTargetSubjects.forEach((sub, idx) => {
+                trHead += `<th class="p-0 border-r border-yellow-600/40">
+                    <input type="text" class="subject-header-input text-yellow-300 font-black py-2" value="${sub}" oninput="updateTargetSubject(${idx}, this.value)" title="클릭하여 과목명 변경">
+                </th>`;
+            });
+            trHead += `</tr>`;
+            thead.innerHTML = trHead;
+
+            tbody.innerHTML = '';
+            
+            let trScore = document.createElement('tr');
+            trScore.className = "bg-yellow-950/20 hover:bg-yellow-950/40 transition";
+            trScore.innerHTML = `<td class="py-2.5 px-3 border-r border-yellow-600/40 text-[10px] font-black text-yellow-400 bg-yellow-950/50 text-left">등급 (점수-등수)</td>`;
+            customTargetSubjects.forEach((_, idx) => {
+                let td = document.createElement('td');
+                td.className = "p-0 border-r border-yellow-600/40";
+                let val = targetScores[idx] && targetScores[idx]['score'] ? targetScores[idx]['score'] : "";
+                td.innerHTML = `<input type="text" class="target-cell-input py-2" placeholder="-" value="${val}" oninput="saveTargetCell(${idx}, 'score', this.value)">`;
+                trScore.appendChild(td);
+            });
+            tbody.appendChild(trScore);
+
+            let trMin = document.createElement('tr');
+            trMin.className = "bg-yellow-950/10 hover:bg-yellow-950/30 transition";
+            trMin.innerHTML = `<td class="py-2.5 px-3 border-r border-yellow-600/40 text-[10px] font-black text-yellow-500 bg-yellow-950/30 text-left">등급 (최소점수)</td>`;
+            customTargetSubjects.forEach((_, idx) => {
+                let td = document.createElement('td');
+                td.className = "p-0 border-r border-yellow-600/40";
+                let val = targetScores[idx] && targetScores[idx]['min'] ? targetScores[idx]['min'] : "";
+                td.innerHTML = `<input type="text" class="target-cell-input py-2" placeholder="-" value="${val}" oninput="saveTargetCell(${idx}, 'min', this.value)">`;
+                trMin.appendChild(td);
+            });
+            tbody.appendChild(trMin);
+        }
+
+        // 동적 학업 매트릭스 렌더링 엔진
+        function renderMatrix() {
+            const tbody = document.getElementById('matrix-tbody');
+            tbody.innerHTML = '';
+
+            customSubjects.forEach((sub, idx) => {
+                subTypes.forEach((type, typeIdx) => {
+                    const tr = document.createElement('tr');
+                    tr.className = typeIdx === 0 
+                        ? "border-b border-cyan-950/20 hover:bg-cyan-950/10 text-xs text-white transition"
+                        : "border-b border-cyan-950/80 hover:bg-cyan-950/15 text-xs text-white transition bg-cyan-950/5";
+
+                    const tdSub = document.createElement('td');
+                    tdSub.className = `p-0 border-r border-cyan-900/40 text-center align-middle ${typeIdx === 0 ? 'bg-cyan-950/30' : 'bg-purple-950/10'}`;
+                    
+                    if (typeIdx === 0) {
+                        tdSub.innerHTML = `
+                            <div class="flex flex-col h-full justify-center items-center py-1">
+                                <input type="text" class="subject-header-input font-extrabold text-[10px] text-cyan-400 w-11/12" value="${sub}" oninput="updateSubject(${idx}, this.value)" title="클릭하여 과목명 변경">
+                                <span class="text-[8px] opacity-75 text-cyan-400">(${type})</span>
+                            </div>
+                        `;
+                    } else {
+                        tdSub.innerHTML = `
+                            <div class="flex flex-col h-full justify-center items-center py-1">
+                                <input type="text" id="sub-dummy-${idx}" class="subject-header-input font-extrabold text-[10px] text-purple-400 w-11/12" value="${sub}" disabled>
+                                <span class="text-[8px] opacity-75 text-purple-400">(${type})</span>
+                            </div>
+                        `;
+                    }
+                    tr.appendChild(tdSub);
+
+                    semesters.forEach(sem => {
+                        const tdSem = document.createElement('td');
+                        tdSem.className = "p-0 border-r border-cyan-900/40";
+                        
+                        const inputKey = `${idx}-${type}-${sem}`;
+                        const savedVal = gradesMatrix[inputKey] || "";
+
+                        const input = document.createElement('input');
+                        input.type = "text";
+                        input.className = "cell-input py-1.5";
+                        input.value = savedVal;
+                        input.placeholder = "-";
+                        
+                        input.oninput = (e) => {
+                            gradesMatrix[inputKey] = e.target.value;
+                            save(); 
+                        };
+                        input.onblur = () => {
+                            showToast(`시스템: [${customSubjects[idx]}(${type}) ${sem}] 성적이 보존되었습니다.`);
+                        };
+
+                        tdSem.appendChild(input);
+                        tr.appendChild(tdSem);
+                    });
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        // 토스트 알림 기능
+        function showToast(message, type = 'blue') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-xs font-bold transition-all duration-300 transform translate-x-10 opacity-0`;
+            
+            if (type === 'pink') toast.classList.add('bg-gray-950', 'border', 'border-rose-500', 'text-rose-400');
+            else if (type === 'yellow') toast.classList.add('bg-gray-950', 'border', 'border-yellow-400', 'text-yellow-400');
+            else if (type === 'red') toast.classList.add('bg-gray-950', 'border', 'border-rose-500', 'text-rose-500');
+            else toast.classList.add('bg-gray-950', 'border', 'border-cyan-400', 'text-cyan-400');
+
+            const iconName = type === 'pink' ? 'shopping-bag' : (type === 'yellow' ? 'award' : (type === 'red' ? 'alert-triangle' : 'info'));
+            toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => toast.classList.remove('translate-x-10', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // 알람 시스템 인터벌
+        setInterval(() => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const nowStr = `${year}-${month}-${date}T${hours}:${minutes}`;
+
+            quests.forEach(q => {
+                if (!q.completed && q.datetime === nowStr && !q.alerted) {
+                    q.alerted = true;
+                    triggerAlarm(q);
+                    save();
+                    render();
+                }
+            });
+        }, 1000);
+
+        function triggerAlarm(quest) {
+            document.getElementById('alarm-quest-name').innerText = `[${quest.type === 'daily' ? '일반' : '네임드'}] ${quest.name}`;
+            document.getElementById('alarm-overlay').style.display = 'flex';
+            if (activeAlarmAudio) activeAlarmAudio.pause();
+            activeAlarmAudio = new Audio(SOUNDS.alarm);
+            activeAlarmAudio.loop = true; activeAlarmAudio.volume = 0.5;
+            activeAlarmAudio.play().catch(() => {});
+        }
+
+        function closeAlarm() {
+            document.getElementById('alarm-overlay').style.display = 'none';
+            if (activeAlarmAudio) { activeAlarmAudio.pause(); activeAlarmAudio = null; }
+            showToast("시스템 경보를 해제했습니다. 신속히 임무를 수행하십시오.");
+        }
+
+        function triggerLevelUp() {
+            playSound(SOUNDS.levelUp);
+            document.getElementById('levelup-overlay').classList.remove('hidden');
+        }
+
+        function closeLevelUp() {
+            document.getElementById('levelup-overlay').classList.add('hidden');
+            showToast("플레이어의 랭크 한계가 한층 더 전개되었습니다.", "yellow");
+        }
+
+        // 퀘스트 제어 로직
+        function addQuest() {
+            const nameInput = document.getElementById('q-name');
+            const datetimeInput = document.getElementById('q-datetime');
+            const typeInput = document.getElementById('q-type');
+
+            if (!nameInput.value.trim() || !datetimeInput.value) {
+                showToast("오류: 작전 지시 내용과 타임라인을 명확히 설정하십시오.", "red");
+                return;
+            }
+
+            quests.push({
+                id: Date.now(),
+                name: nameInput.value.trim(),
+                datetime: datetimeInput.value,
+                type: typeInput.value,
+                completed: false,
+                alerted: false,
+                rewardExp: typeInput.value === 'daily' ? 30 : 100,
+                rewardCoin: typeInput.value === 'daily' ? 10 : 50
+            });
+            save(); render();
+            nameInput.value = ''; datetimeInput.value = '';
+            showToast("시스템에 신규 등록 퀘스트가 승인되었습니다.");
+        }
+
+        function toggleQuestComplete(id) {
+            const q = quests.find(i => i.id === id);
+            if (!q) return;
+
+            if (!q.completed) {
+                q.completed = true; exp += q.rewardExp; coin += q.rewardCoin;
+                stats[new Date().getDay()] += 1;
+                playSound(SOUNDS.complete);
+                if (exp >= 100) { lv += Math.floor(exp / 100); exp = exp % 100; triggerLevelUp(); }
+                showToast(`임무 완료: +${q.rewardExp}XP / +${q.rewardCoin}G 보상 획득`, "yellow");
+            } else {
+                q.completed = false; exp -= q.rewardExp; coin -= q.rewardCoin;
+                if (exp < 0) { if (lv > 1) { lv--; exp = 100 + exp; } else { exp = 0; } }
+                if (coin < 0) coin = 0;
+                if (stats[new Date().getDay()] > 0) stats[new Date().getDay()] -= 1;
+                showToast("보고된 퀘스트 완료 처리를 취소 처리했습니다.", "red");
+            }
+            save(); render();
+        }
+
+        function deleteQuest(id, event) {
+            event.stopPropagation();
+            quests = quests.filter(q => q.id !== id);
+            save(); render();
+            showToast("해당 퀘스트가 완전 파기되었습니다.", "red");
+        }
+
+        function clearCompletedQuests() {
+            const origLength = quests.length;
+            quests = quests.filter(q => !q.completed);
+            if (quests.length === origLength) { showToast("청소할 완료된 임무 기록이 부재합니다."); return; }
+            save(); render();
+            showToast("완료된 퀘스트 슬롯들이 초기 세정되었습니다.");
+        }
+
+        // 상점 및 인벤토리 제어 로직
+        function addShopItem() {
+            const nameInput = document.getElementById('s-name');
+            const priceInput = document.getElementById('s-price');
+            const price = parseInt(priceInput.value);
+
+            if (!nameInput.value.trim() || isNaN(price) || price <= 0) {
+                showToast("오류: 전리품 이름 및 크레딧 단가를 확인하십시오.", "red"); return;
+            }
+
+            shopItems.push({ id: Date.now(), name: nameInput.value.trim(), price, iconIdx: Math.floor(Math.random() * 6) });
+            save(); render();
+            nameInput.value = ''; priceInput.value = '';
+            showToast("상점 슬롯에 신규 전리품 매트릭스가 동기화되었습니다.", "pink");
+        }
+
+        function buyItem(id, name, price, iconIdx) {
+            if (coin >= price) {
+                coin -= price;
+                inventory.push({ invId: Date.now() + Math.random().toString(36).substr(2, 5), name, iconIdx });
+                purchaseLogs[name] = (purchaseLogs[name] || 0) + 1;
+                playSound(SOUNDS.buy);
+                showToast(`[${name}]을 구매하여 인벤토리에 보관했습니다.`, "pink");
+                save(); render();
+            } else {
+                showToast("시스템 크레딧(G)이 부족하여 해당 전리품을 획득할 수 없습니다.", "red");
+            }
+        }
+
+        function removeShopItem(id, event) {
+            event.stopPropagation();
+            shopItems = shopItems.filter(s => s.id !== id);
+            save(); render();
+            showToast("아이템이 상점에서 완전 영구 격리되었습니다.");
+        }
+
+        function useInventoryItem(invId, name) {
+            inventory = inventory.filter(item => item.invId !== invId);
+            playSound(SOUNDS.complete);
+            showToast(`[${name}]을 사용 완료하였습니다. 소지품에서 파기됩니다.`, "pink");
+            save(); render();
+        }
+
+        function resetShopItems() {
+            shopItems = [
+                { id: 1, name: "레이저 포스 세이버", price: 50, iconIdx: 0 }, { id: 2, name: "아케인 매직 스태프", price: 100, iconIdx: 1 },
+                { id: 3, name: "홀로그램 힐링 엘릭서", price: 30, iconIdx: 4 }, { id: 4, name: "택티컬 나노 에너지 실드", price: 150, iconIdx: 3 },
+                { id: 5, name: "스톰 바운드 레이저 보우", price: 120, iconIdx: 2 }, { id: 6, name: "퀀텀 크로노 링", price: 80, iconIdx: 5 }
+            ];
+            save(); render();
+            showToast("기본 무기 및 장비 라인업으로 완전 재구성되었습니다.", "pink");
+        }
+
+        function clearPurchaseLogs() { purchaseLogs = {}; save(); render(); showToast("주간 상품 구매 집계 표가 초기화되었습니다."); }
+
+        let myChart = null;
+        function renderChart() {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            const gradient = ctx.createLinearGradient(0, 0, 0, 160);
+            gradient.addColorStop(0, 'rgba(0, 217, 255, 0.6)'); gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['일', '월', '화', '수', '목', '금', '토'],
+                    datasets: [{ label: '달성률', data: stats, backgroundColor: gradient, borderColor: '#00d9ff', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: '#00d9ff', pointBorderColor: '#ffffff', pointHoverRadius: 6 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 9 } } }, y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { stepSize: 1, color: '#6b7280', font: { size: 9 } } } }
+                }
+            });
+        }
+
+        function render() {
+            document.getElementById('level').innerText = lv;
+            document.getElementById('exp').innerText = exp;
+            document.getElementById('coin').innerText = coin.toLocaleString();
+            document.getElementById('exp-bar').style.width = `${Math.min(exp, 100)}%`;
+
+            const qc = document.getElementById('quest-container'); qc.innerHTML = '';
+            quests.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+            if (quests.length === 0) qc.innerHTML = `<div class="text-center py-12 text-gray-600 text-xs font-semibold">진행 예정인 임무 작전이 없습니다.</div>`;
+            else {
+                quests.forEach(q => {
+                    const complete = q.completed;
+                    const div = document.createElement('div');
+                    div.className = `group flex items-center justify-between p-2.5 border transition cursor-pointer rounded ${complete ? 'bg-black/40 border-gray-900 text-gray-600 opacity-50' : 'bg-cyan-950/5 border-cyan-950 hover:border-cyan-500 hover:bg-cyan-950/15 text-white'}`;
+                    div.onclick = () => toggleQuestComplete(q.id);
+                    div.innerHTML = `
+                        <div class="flex items-start gap-2.5 min-w-0 flex-1 pr-1">
+                            <div class="mt-0.5 flex-shrink-0">${complete ? `<i data-lucide="check-square" class="w-4 h-4 text-gray-600"></i>` : `<i data-lucide="square" class="w-4 h-4 text-cyan-400"></i>`}</div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-bold truncate ${complete ? 'line-through' : ''}"><span class="text-[10px] ${q.type === 'daily' ? 'text-cyan-400' : 'text-purple-400'} font-black mr-1">[${q.type === 'daily' ? '일반' : '네임드'}]</span>${q.name}</p>
+                                <p class="text-[9px] text-yellow-500/80 font-bold mt-0.5">${q.datetime.replace('T', ' ')} | +${q.rewardExp}XP, +${q.rewardCoin}G</p>
+                            </div>
+                        </div>
+                        <button onclick="deleteQuest(${q.id}, event)" class="opacity-100 md:opacity-0 group-hover:opacity-100 p-1 hover:bg-rose-950/60 rounded text-gray-500 hover:text-rose-400 transition flex-shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    `;
+                    qc.appendChild(div);
+                });
+            }
+
+            const sc = document.getElementById('shop-container'); sc.innerHTML = '';
+            shopItems.forEach(s => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `group flex flex-col justify-between p-3 border border-rose-950/60 bg-black/40 hover:border-rose-400 hover:bg-rose-950/10 rounded-lg transition text-center relative h-52`;
+                itemDiv.innerHTML = `
+                    <button onclick="removeShopItem(${s.id}, event)" class="absolute top-1.5 right-1.5 p-1 hover:bg-rose-950/50 rounded text-gray-600 hover:text-rose-400 transition opacity-100 md:opacity-0 group-hover:opacity-100"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                    <div class="mt-2 flex-1 flex flex-col justify-center">${WEAPON_SVGS[s.iconIdx % WEAPON_SVGS.length]}<span class="text-[10px] md:text-xs font-black text-gray-100 mt-2 block tracking-tight line-clamp-2 px-1">${s.name}</span></div>
+                    <div class="mt-2"><button onclick="buyItem(${s.id}, '${s.name}', ${s.price}, ${s.iconIdx})" class="w-full py-1.5 bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white font-extrabold text-[10px] system-font transition shadow-sm rounded flex items-center justify-center gap-0.5"><span>${s.price}</span> <span class="text-[8px] text-rose-200">G</span></button></div>
+                `;
+                sc.appendChild(itemDiv);
+            });
+
+            const ic = document.getElementById('inventory-container'); ic.innerHTML = '';
+            if (inventory.length === 0) ic.innerHTML = `<div class="col-span-3 text-center py-10 text-gray-600 text-[10px]">인벤토리가 비어있습니다.</div>`;
+            else {
+                inventory.forEach(item => {
+                    const invDiv = document.createElement('div');
+                    invDiv.className = `p-2 bg-rose-950/10 border border-rose-950/40 hover:border-rose-400 hover:bg-rose-950/35 rounded-lg text-center cursor-pointer transition flex flex-col justify-center items-center h-20 relative`;
+                    invDiv.onclick = () => useInventoryItem(item.invId, item.name);
+                    invDiv.innerHTML = `${WEAPON_SVGS[item.iconIdx % WEAPON_SVGS.length].replace('w-12 h-12', 'w-7 h-7')}<span class="text-[9px] text-gray-300 truncate w-full px-1 block mt-1">${item.name}</span>`;
+                    ic.appendChild(invDiv);
+                });
+            }
+
+            const lby = document.getElementById('purchase-log-tbody'); lby.innerHTML = '';
+            const logKeys = Object.keys(purchaseLogs);
+            if (logKeys.length === 0) lby.innerHTML = `<tr><td colspan="2" class="py-10 text-gray-600 text-[10px] text-center">구매 로그 데이터가 없습니다.</td></tr>`;
+            else {
+                logKeys.forEach(key => {
+                    const tr = document.createElement('tr'); tr.className = "hover:bg-rose-950/10";
+                    tr.innerHTML = `<td class="py-1.5 text-left pl-2 font-bold text-[11px] truncate max-w-[120px]">${key}</td><td class="py-1.5 pr-2 text-right text-rose-400 font-extrabold system-font">${purchaseLogs[key]}회</td>`;
+                    lby.appendChild(tr);
+                });
+            }
+
+            lucide.createIcons();
+            renderChart();
+        }
+
+        window.onload = function() {
+            migrateDataIfNeeded();
+            loadProfileAndTargetData();
+            renderTargetMatrix();
+            renderMatrix();
+            render();
+            initPWA(); // PWA 앱 모드 초기화 호출
+        }
+
+        // --- PWA (Progressive Web App) 기능 및 가이드 시스템 ---
+        function initPWA() {
+            // 동적 앱 매니페스트 주입 (독립형 앱으로 인식되도록 설정)
+            const manifest = {
+                "name": "나만의 레벨업 시스템",
+                "short_name": "레벨업",
+                "start_url": ".",
+                "display": "standalone",
+                "background_color": "#020617",
+                "theme_color": "#020617",
+                "icons": [{
+                    "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAyMDYxNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjMzZW0iIGZpbGw9IiMwMGQ5ZmYiPlNZUzwvdGV4dD48L3N2Zz4=",
+                    "sizes": "192x192",
+                    "type": "image/svg+xml"
+                }]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = manifestUrl;
+            document.head.appendChild(manifestLink);
+        }
+
+        // 앱 설치 안내창 제어
+        function showInstallGuide() {
+            document.getElementById('install-guide-overlay').classList.remove('hidden');
+        }
+        function closeInstallGuide() {
+            document.getElementById('install-guide-overlay').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
+
+
+```
